@@ -1,0 +1,912 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Birthday Gameboy Pink</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+  body{
+    font-family:'Press Start 2P', monospace;
+    margin:0;
+    /* Ubah background body menjadi pink muda */
+    background:#ffc0cb; 
+  }
+  *{
+    font-family:'Press Start 2P', monospace !important;
+    letter-spacing:1px;
+  }
+
+  /* GAMEBOY BODY */
+  .gameboy{
+    width:800px;
+    height:400px;
+    margin:40px auto;
+    /* Warna Game Boy Body menjadi Pink Terang */
+    background:#ff80b4; 
+    /* Border menjadi Magenta Gelap */
+    border:10px solid #c24d86; 
+    border-radius:22px;
+    padding-bottom:140px;
+    position:relative;
+    /* Shadow menjadi Pink Gelap */
+    box-shadow:0 0 0 6px #a74071 inset, 0 12px 25px rgba(0,0,0,0.25);
+  }
+
+  /* SCREEN FRAME */
+  .screen-frame{
+    width:700px;
+    height:400px;
+    background:#1b2f1b; /* Tetap hijau gelap untuk kontras layar retro */
+    margin:30px auto 0;
+    border-radius:10px;
+    border:6px solid #000;
+    position:relative;
+    padding:10;
+    overflow: hid;
+  }
+
+  .screen-frame::after{
+    content:"";
+    position:relative;
+    inset:0;
+    /* Pertahankan efek scanline hijau */
+    background:linear-gradient(rgba(0,255,0,0.1) 2px, transparent 2px),
+                linear-gradient(90deg, rgba(0,255,0,0.1) 2px, transparent 2px);
+    background-size:4px 4px;
+    pointer-events:none;
+  }
+
+  /* SCREEN CONTENT */
+  .app{
+    width:100%;height:100%;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    color:#000; /* Tetap hijau terang */
+    text-shadow:0 0 6px #00ff41;
+    font-size:16px;
+    padding:0;
+    overflow-y: auto;
+  }
+
+  header{display:flex;} 
+
+  /* MENU BUTTONS OUTSIDE SCREEN */
+  #main-menu{
+    margin-top:25px;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:16px;
+    padding:20px;
+    width: 100%; 
+    box-sizing: border-box;
+    /* Memberi latar belakang untuk area menu agar terlihat lebih pink */
+    background: #ffb3d9; 
+    border-radius: 10px;
+  }
+
+  .btn{
+    padding:14px;
+    border-radius:10px;
+    font-size:10px;
+    cursor:pointer;
+    border:4px solid #000;
+    color:#000;
+    text-align:center;
+    box-shadow:0 4px 0 #000;
+    user-select: none;
+  }
+
+  .btn:active{
+    box-shadow: 0 0 0 #000;
+    transform: translateY(4px);
+  }
+
+  /* SECTIONS */
+  .section{display:none;padding:20px;color:#000;width:100%;box-sizing: border-box;text-shadow: none; overflow-y: auto;}
+  .back{background:#ddd;color:#000;margin-bottom:12px;border-radius:8px;padding:8px 12px;width:max-content;cursor:pointer;border:2px solid #000;font-size:10px;}  
+  .section h2{font-size: 16px; margin-top: 0; margin-bottom: 15px;}
+  .section p{font-size:12px; line-height: 1.6;}
+  
+    /* SECTIONS 2 */
+  .sectionn{display:none;padding:20px;color:#000;width:100%;box-sizing: border-box;text-shadow: none; overflow-y: auto;}
+  .back{background:#ddd;color:#000;margin-bottom:12px;border-radius:8px;padding:8px 12px;width:max-content;cursor:pointer;border:2px solid #000;font-size:10px;}  
+  .sectionn h2{font-size: 16px; margin-top: 0; margin-bottom: 15px;}
+  .sectionn p{font-size:12px; line-height: 1.6;}
+  
+    /* SECTIONS 3 */
+  .sectionnn{display:none;padding:20px;color:#000;width:100%;box-sizing: border-box;text-shadow: none; overflow-y: auto;}
+  .back{background:#ddd;color:#000;margin-bottom:12px;border-radius:8px;padding:8px 12px;width:max-content;cursor:pointer;border:2px solid #000;font-size:10px;}  
+  .sectionnn h2{font-size: 16px; margin-top: 0; margin-bottom: 15px;}
+  .sectionnn p{font-size:12px; line-height: 1.6;}
+  
+/* ===== Photobooth mini + Photostrip CSS ===== */
+.photobooth-wrap {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  justify-content: space-between;
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 6px;
+}
+
+/* kiri: video + controls */
+.photobooth-left {
+  flex: 1 1 55%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* kanan: preview strip + download */
+.photobooth-right {
+  flex: 1 1 40%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+}
+
+/* video kamera (mini) */
+.photobooth-wrap #camera {
+    transform:scaleX(-1);
+  width: 100%;
+  height: 280px;            /* tinggi tetap agar proporsional di gameboy */
+  object-fit: cover;
+  background: #000;
+  border: 4px solid #72ff6b; /* cocok dengan tema hijau retro */
+  border-radius: 6px;
+  box-shadow: 0 4px 0 rgba(0,0,0,0.6);
+}
+
+/* tombol ambil 3 foto */
+#capture3Btn {
+  padding: 10px 12px;
+  font-size: 12px;
+  border-radius: 8px;
+  border: 3px solid #000;
+  background: linear-gradient(#9aff9a, #7dff7d);
+  cursor: pointer;
+  box-shadow: 0 4px 0 #000;
+  width: 100%;
+}
+#capture3Btn:active { transform: translateY(4px); box-shadow: none; }
+
+/* countdown besar (angka) */
+#countdown {
+  font-weight: 700;
+  font-size: 16px;
+  text-align: center;
+  color: #ff4fbf;      /* kontras menyenangkan */
+  text-shadow: 0 0 6px rgba(255,0,150,0.25);
+  min-height: 24px;
+}
+
+/* photo strip preview (di dalam frame polaroid) */
+.photo-frame {
+  width: 100%;
+  max-width: 220px;
+  background: #ff80b4;
+  padding: 12px;
+  border: 12px solid #ff80b4;       /* tebal seperti polaroid */
+  box-shadow: 0 6px 0 rgba(0,0,0,0.35);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  border-radius: 6px;
+}
+
+/* area di dalam frame yang berisi strip image */
+.photo-frame .strip-holder {
+  width: 100%;
+  background: #eee;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 5px solid #000;
+}
+
+/* gambar photo strip (vertikal) */
+#photoStrip {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: contain;
+}
+
+/* tombol download */
+#downloadStripBtn {
+  padding: 8px 10px;
+  font-size: 12px;
+  border-radius: 8px;
+  border: 3px solid #000;
+  background: linear-gradient(#ffb3d9, #ff80b4);
+  cursor: pointer;
+  box-shadow: 0 4px 0 #000;
+  width: 100%;
+}
+#downloadStripBtn:active { transform: translateY(4px); box-shadow: none; }
+
+/* thumbnail kecil (opsional) jika ingin menampilkan satu-satu foto hasil */
+.strip-thumb {
+  width: 48px;
+  height: 64px;
+  object-fit: cover;
+  border: 3px solid #000;
+  background: #fff;
+  border-radius: 4px;
+}
+
+/* responsif: jika ruang sempit, susun vertikal */
+@media (max-width: 420px) {
+  .photobooth-wrap { flex-direction: column; gap: 10px; }
+  .photo-frame { max-width: 100%; }
+  #camera { height: 160px; }
+}
+  #password-box {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    text-align: center;
+  }
+
+  #passwords {
+    display: none; /* disembunyikan dulu */
+    text-align: center;
+  }
+
+  input {
+    padding: 8px;
+    font-size: 16px;
+    text-align: center;
+    width: 120px;
+  }
+
+  button {
+    margin-top: 10px;
+    padding: 8px 15px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+</st
+  /* Gallery specific styles */
+  #galeriInput{
+    font-size: 8px;
+    padding: 5px;
+    border: 2px solid #000;
+    background: #fff;
+    width: 100%;
+    box-sizing: border-box;
+  }
+   .center9 {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100px; /* opsional */
+   }
+ .center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 350px; /* opsional */
+}
+.center2 {
+  display: block;
+  transform:rotate(270deg);
+  margin-left: auto;
+  margin-right: auto;
+  width: 350px; /* opsional */
+}
+
+.container {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.vid {
+  width: 400px;
+}
+.vidd {
+    display:block;
+  width: 150px;
+  transform:rotate(270deg);
+}
+
+.foto {
+  width: 300px; /* opsional */
+}
+
+  }
+  #galeriList img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border: 3px solid #000;
+  }
+  #galeriList > div {
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+  }
+
+  /* BUTTONS A & B */
+  .btnA,.btnB{
+    width:55px;height:55px;
+    /* Tombol A dan B dibuat warna Magenta yang kuat */
+    background:#e0007e; 
+    border:4px solid #000;
+    border-radius:50%;
+    position:absolute;
+    bottom:-75px;
+    /* Box shadow dibuat lebih gelap dari body */
+    box-shadow:0 4px #000;
+    cursor:pointer;
+  }
+  .btnA:active, .btnB:active, #captureBtn:active{
+    box-shadow: 0 0 0 #000;
+    transform: translateY(4px);
+  }
+  .btnA{right:20px;} .btnB{right:100px;}
+
+  .labelA,.labelB{
+    position:absolute;
+    bottom:-97px;
+    font-size:14px;
+    color:#000;
+  }
+  .labelA{right:43px;} .labelB{right:121px;}
+
+  /* DPAD */
+  .dpad{
+    width:80px;height:80px;
+    background:#000;
+    position:absolute;
+    bottom:-92px;
+    left:0px;
+    border-radius:6px;
+  }
+
+  /* START/SELECT */
+  .selectStart{
+    position:absolute;
+    bottom:-70px;
+    left:25%;
+    transform:translateX(20%);
+    display:flex;
+    gap:30px;
+  }
+
+  .smallBtn{
+    width:60px;
+    height:20px;
+    background:#b4b4b4;
+    border-radius:10px;
+    border:3px solid #000;
+    box-shadow:0 3px #000;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:8px;
+  }
+
+  /* START SCREEN */
+  #startScreen{position:fixed;inset:0;background:#ff4fbf;color:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:10000;} 
+  #startBtn{padding:12px 20px;background:#ff74cf;color:#000;border:4px solid #000;border-radius:8px;cursor:pointer;user-select: none;}
+  #startBtn:active{
+    box-shadow: 0 0 0 #000;
+    transform: translateY(4px);
+  }
+
+  /* LOADING */
+  #loadingScreen{position:fixed;inset:0;background:#ff4fbf;color:#e0070e;display:none;flex-direction:column;align-items:center;justify-content:center;z-index:9000;opacity:1;transition:0.5s;}
+  .pixel-bar{display:flex;gap:6px;margin-top:10px}
+  .pxBar{width:14px;height:22px;background:#45003D;opacity:0.15;border:2px solid rgba(255,255,255,0.06);}  
+  .loading-title{font-size:24px;color:#45003D}
+  .loading-sub{margin-top:14px;font-size:13px;opacity:1;color:#45003D}
+  /*Ucapan */
+  #password-box{background:#FFFFFF}
+  #password{background:#FFFFFF}
+  #ucapan{background:#FFFFFF}
+  #gallery{background:#FFFFFF}
+  #photobooth{background:#FFFFFF}
+  #music{background:#FFFFFF}
+  
+</style>
+</head>
+<body>
+
+
+
+
+<div id="startScreen">
+  <div style="font-size:22px;margin-bottom:20px;">PRESS START</div>
+  <button id="startBtn">START</button>
+</div>
+
+<div id="loadingScreen">
+  <div class="loading-title">LOADING...</div>
+  <div class="pixel-bar" id="pixelLoader">
+    <div class="pxBar"></div><div class="pxBar"></div><div class="pxBar"></div><div class="pxBar"></div><div class="pxBar"></div>
+    <div class="pxBar"></div><div class="pxBar"></div><div class="pxBar"></div><div class="pxBar"></div><div class="pxBar"></div>
+    <div class="pxBar"></div><div class="pxBar"></div><div class="pxBar"></div><div class="pxBar"></div><div class="pxBar"></div>
+    <div class="pxBar"></div><div class="pxBar"></div><div class="pxBar"></div><div class="pxBar"></div><div class="pxBar"></div>
+  </div>
+  <div class="loading-sub">Please wait...</div>
+</div> 
+
+<div class="gameboy">
+  <div class="screen-frame">
+    <div class="app">
+      <header>Happy Birthday Cheeseteaa! 🎉</header>
+
+      <div id="main-menu" class="menu">
+        <button class="btn blue" onclick="openSection('password-box')">📜 Ucapan</button>
+        <button class="btn purple" onclick="openSection('gallery')">🖼️ Mini Gallery</button>
+        <button class="btn green" onclick="openSection('photobooth')">📸 Mini Photobooth</button>
+        <button class="btn red" onclick="openSection('music')">🎵 Music</button>
+      </div>
+      <div id="music" class="section">
+             <div class="back" onclick="backMenu()">← kembali</div>
+        <p>Birthday Music</p>
+         <img src="https://png.pngtree.com/png-clipart/20221122/ourmid/pngtree-happy-birthday-text-effect-png-image_241348.png" class="center9">
+       
+          <button onclick="playMusic()">Play</button>
+          <button onclick="pauseMusic()">Pause</button>
+          <audio id="bgm" src="https://res.cloudinary.com/dq05tmjaj/video/upload/v1765585073/videoplayback_z92e3z.mp4" loop></audio>
+          <p>Christmas Music</p>
+          <img src=" https://img.freepik.com/free-vector/cheerful-cartoon-santa-claus-greeting-christmas-celebration_1308-153957.jpg?semt=ais_hybrid&w=740&q=80" class="center9">
+           <button onclick="playMusic1()">Play</button>
+          <button onclick="pauseMusic1()">Pause</button>
+          <audio id="bgm1" src="https://res.cloudinary.com/dq05tmjaj/video/upload/v1765588574/JINGLE_BELLS_Instrumental_cysoot.mp4" loop></audio>
+           <p>Your fav song (instrument)</p>
+            <img src=" https://www.shutterstock.com/shutterstock/photos/2290493471/display_1500/stock-vector-my-favorite-song-handwriting-quote-calligraphy-phrase-vector-illustration-2290493471.jpg" class="center9">
+          <button onclick="playMusic2()">Play</button>
+          <button onclick="pauseMusic2()">Pause</button>
+          <audio id="bgm2" src="https://res.cloudinary.com/dq05tmjaj/video/upload/v1765588971/JCC_Worship_-_PenyertaanMu_Karaoke_Piano_Nada_Asli_yk0uah.mp4" loop></audio>
+           <p>Your fav song (original)</p>
+            <img src="https://res.cloudinary.com/jerrick/image/upload/d_642250b563292b35f27461a7.png,f_jpg,fl_progressive,q_auto,w_1024/rzhrgfghoxxdol4ywbod.jpg" class="center9">
+          <button onclick="playMusic3()">Play</button>
+          <button onclick="pauseMusic3()">Pause</button>
+          <audio id="bgm3" src="https://res.cloudinary.com/dq05tmjaj/video/upload/v1765589765/Penyertaan-Mu_Tuhan_-_JCC_Worship_1_cninw5.mp4" loop></audio>
+      </div>
+
+<div id="password-box" class="section">
+     <div class="back" onclick="backMenu()">← kembali</div>
+  <h3>Masukkan Password</h3>
+  <input type="passwords" id="pass" maxlength="6">
+  <br>
+  <button  onclick="checkPass()">Masuk</button>
+    <p id="error" style="color:red; display:none;">Password salah!</p>
+    <p id="berhasil" style="color:green; display:none;">Password benarrr!</p>
+  <button id="masuk" class="btn pink" onclick="openSection('password')" style="display:none">Go!</button>
+
+</div>
+
+<div id="password" class="section"> 
+<div class="back" onclick="backMenu()">← kembali</div>
+  <h1>Selamatttt!</h1>
+  <p>Yeayy tau passwordnya keren, selamat membacaa!!!</p>
+   <button class="btn black" onclick="openSection('ucapan')">Mau liat</button>
+  </div>
+  
+      <div id="ucapan" class="section">
+        <div class="back" onclick="backMenu()">← kembali</div>
+        <h2>Hallo princesss! 💖</h2>
+        <p>Selamat ulang tahun ya cheeseteaaa! 🎉 🥳
+        <p>Semoga di usia yang ke 21 ini kam diberi kesehatan, kelancaran setiap proses, dan makin banyak hal yang baik datang ke kam tanpa terduga yaa.Semoga semua rencana yang kam simpan dan impian yang kam simpan pelan-pelan bisa terwujud satu persatu sesuai waktunya.
+        
+       <p> Aku berharap kam dikelilingi oleh orang-orang yang tulus menyayangi dan menghargai kam. Jangan lupa buat selalu bangga pada diri kam sendiri, karena hingga usia 21 tahun ini kamu tetap bertahan dan berkembang dengan baik. 
+        
+        <p>Jujur aku senang bisa kenal sama kam, dan jauh lebih mengenal kam saat ini. Ketika kam yapping, tertawa, dan sifat-sifat kecil tentang kam tuh rasanya bikin suasana jadi lebih seru dan nyaman.
+        <p>Semoga kedepannya kam bisa terus tersenyum, dan semoga juga setiap hari kam selalu merasa ditemani oleh hal baik dan oleh orang-orang yang peduli sama kam.
+            
+       <p>Makasih juga udah lahir kedunia ini, karena kalau ga ada kam kayanya canvas hitamku tidak akan berwarna :(
+       <p>Kam banyak memberikan warna di hari hari suramku haha, senang aja kalau ada dideket kam tuhh, apalagi kalau di gereja kaya pengen pisan deket tapi apadaya harus jaga jarakkk :(
+        
+        <p>Aku ga bisa kasih kado yang mahal kaya biasanya orang-orang. Aku cuman bisa usahain ini, karena cmn ini yang aku bisa :(
+        Semoga dengan polaroid, jajan mochi, serta apk ini dapat bikin kam bahagia dan merasa spesial di hari ulang tahun kam inii.
+        <p>Terima kasih sudah menjadi bagian penting dalam hidupku. Semoga hari ini spesial dan penuh kenangan indah!
+        <P>Nikmatin hari momen spesial mu dengan penuh sukacita dan bahagiaa! :)
+        <p>
+            <p>
+                <p>from : ur brother :)</p>
+            </p> 
+        </p>
+        </P>
+        
+      </div>
+
+      <div id="gallery" class="section">
+        <div class="back" onclick="backMenu()">← kembali</div>
+        <h2>Mini Gallery 📸</h2>
+
+<p style="margin-top: 15px;margin-left:auto;margin-right:auto; font-size: 15px;">1. Our first photobooth</p>
+<p style="margin-top: 15px;margin-left:auto;margin-right:auto; font-size: 10px;">Gaya santai</p>
+      <img src="https://i.imgur.com/UorzaaO.jpeg" class="center">
+<p style="margin-top: 15px;margin-left:auto;margin-right:auto; font-size: 10px;">Gaya tian</p>
+ <img src="https://i.imgur.com/hePbFr8.jpeg" class="center">
+ <p style="margin-top: 15px;margin-left:auto;margin-right:auto; font-size: 10px;">Gatau gaya apa</p>
+      <img src="https://i.imgur.com/gioH0Uz.jpeg" class="center">
+ <p style="margin-top: 15px;margin-left:auto;margin-right:auto; font-size: 10px;">Hasilnya bagusss</p>
+      <img src="https://i.imgur.com/7TqLzB2.png" class="center2">
+<p style="margin-top: 15px;margin-left:auto;margin-right:auto; font-size: 10px;">Gifnya juga bagus banget ga sihh?</p>
+<div class="container">
+  <video src="https://i.imgur.com/bvl9CiP.mp4" autoplay loop muted playsinline class="vid"></video>
+</div>
+<p style="margin-top: 15px;margin-left:auto;margin-right:auto; font-size: 10px;">Video ini susah banget dimasukinnya sumpahh, tapi bisaa</p>
+<div class="container">
+  <video src="https://i.imgur.com/YTyNLbq.mp4" autoplay loop muted playsinline class="vidd"></video>
+</div>
+<p style="margin-top: 15px;margin-left:auto;margin-right:auto; font-size: 15px;">2. Beberapa foto yang aku sukaa</p>
+<p style="margin-top: 15px;margin-left:auto;margin-right:auto; font-size: 10px;">ini kaya kalem gitu tapi masih keliatan elegan</p>
+ <img src="https://i.imgur.com/W4PUAmv.png" class="center">
+ <p style="margin-top: 15px;margin-left:auto;margin-right:auto; font-size: 10px;">wanita karir banget posenyaa, sukaa</p>
+ <img src="https://i.imgur.com/fuUw5dY.png" class="center">
+ <p style="margin-top: 15px;margin-left:auto;margin-right:auto; font-size: 10px;">ini blur banget, tapi foto polaroid pertama yang aku suka</p>
+ <img src="https://i.imgur.com/KAWwefR.png" class="center">
+ <p style="margin-top: 15px;margin-left:auto;margin-right:auto; font-size: 10px;">lucu banget ngeliatnya posenya kaya anak kicik</p>
+ <img src="https://i.imgur.com/1IyeLgP.png" class="center">
+ <p style="margin-top: 15px;margin-left:auto;margin-right:auto; font-size: 10px;">ini juga blur banget😭, tapi posenya bagus ditambah bunganya</p>
+ <img src="https://i.imgur.com/Vl60urz.png" class="center">
+ <p style="margin-top: 15px;margin-left:auto;margin-right:auto; font-size: 10px;">INI SIHH GILA CANTIK BANGET WOYYY</p>
+ <img src="https://i.imgur.com/i8LyUl3.png" class="center">
+ <p style="margin-top: 15px;margin-left:auto;margin-right:auto; font-size: 10px;">blur but suka aja temen"nya surprisein kam</p>
+ <img src="https://i.imgur.com/DeQ1LlK.png" class="center">
+  <p style="margin-top: 15px;margin-left:auto;margin-right:auto; font-size: 10px;">oh mengapa, bunga ditamanku hanya satu?</p>
+  <p style="margin-top: 15px;margin-left:auto;margin-right:auto; font-size: 10px;">oh menghilang, bunga kesayanganku diambil orang...</p>
+  <p style="margin-top: 15px;margin-left:auto;margin-right:auto; font-size: 10px;">*baca pake nada hehehe</p>
+ <img src="https://i.imgur.com/CC3EpJA.png" class="center">
+
+<p style="margin-top: 50px;margin-left:auto;margin-right:auto; font-size: 10px;">sekian dan terimakasihhh</p>
+<p style="margin-top: 50px;margin-left:auto;margin-right:auto; font-size: 10px;">harusnya beberapa foto ada, tapi rusak hp nyaa 😭</p>
+
+      </div>
+        <div id="galeriList" style="margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+          </div>
+        
+<div id="photobooth" class="section">
+  <div class="back" onclick="stopCamera(); backMenu();">← kembali</div>
+  <h2>Photobooth 🎉</h2>
+
+  <div class="photobooth-wrap">
+    <div class="photobooth-left">
+      <video id="camera" autoplay playsinline></video>
+      <button id="capture3Btn" class="btn">📸 Ambil 3 Foto</button>
+      <div id="countdown"></div>
+    </div>
+
+    <div class="photobooth-right">
+      <div class="photo-frame">
+        <div class="strip-holder">
+          <img id="photoStrip" style="display:none" alt="photo strip preview">
+        </div>
+        <button id="downloadStripBtn" style="display:none">⬇️ Download Photo Strip</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <div class="dpad"></div>
+  <div class="btnA" id="btnA" onclick="playClickSound(); handleControl('A')"></div>
+  <div class="labelA">A</div>
+  <div class="btnB" id="btnB" onclick="playClickSound(); handleControl('B')"></div>
+  <div class="labelB">B</div>
+  <div class="selectStart">
+    <div class="smallBtn" onclick="playClickSound()">SELECT</div>
+    <div class="smallBtn" onclick="playClickSound()">START</div>
+  </div>
+
+  <audio id="clickSound" src="https://actions.google.com/sounds/v1/cartoon/pop.ogg"></audio>
+</div>
+
+<script>
+const startBtn = document.getElementById('startBtn');
+const startScreen = document.getElementById('startScreen');
+const loadingScreen = document.getElementById('loadingScreen');
+const pixelBars = document.querySelectorAll('.pxBar');
+const clickSound = document.getElementById('clickSound');
+
+// --- 1. START SCREEN & LOADING LOGIC ---
+startBtn.onclick = () => {
+  playClickSound();
+  startScreen.style.display = 'none';
+  loadingScreen.style.display = 'flex';
+
+  let index = 0;
+  const loadingInterval = setInterval(() => {
+    if (index < pixelBars.length) {
+      pixelBars[index].style.opacity = '1';
+      index++;
+    } else {
+      clearInterval(loadingInterval);
+      setTimeout(() => {
+        loadingScreen.style.opacity = '0';
+        setTimeout(() => loadingScreen.style.display = 'none', 500);
+      }, 300);
+    }
+  }, 120);
+};
+
+function playClickSound() {
+    clickSound.currentTime = 0;
+    clickSound.play();
+}
+
+// --- 2. MENU NAVIGATION ---
+function openSection(id) {
+  playClickSound();
+  document.getElementById('main-menu').style.display = 'none';
+  document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
+  const section = document.getElementById(id);
+  section.style.display = 'flex';
+  section.style.flexDirection = 'column';
+  
+  // Spesifik untuk Photobooth: mulai kamera
+  if (id === 'photobooth') {
+      startCamera();
+  }
+}
+
+function backMenu() {
+  playClickSound();
+  stopCamera(); // Stop camera just in case
+  document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
+  document.getElementById('main-menu').style.display = 'grid';
+}
+
+// --- 3. PHOTOBOOTH LOGIC ---
+/* ============================================================
+   PHOTOBOOTH - AMBIL 3 FOTO + BUAT PHOTO STRIP + DOWNLOAD
+   ============================================================ */
+
+let stream2 = null;
+const camera2 = document.getElementById("camera");
+const capture3Btn = document.getElementById("capture3Btn");
+const countdown = document.getElementById("countdown");
+const photoStrip = document.getElementById("photoStrip");
+const downloadStripBtn = document.getElementById("downloadStripBtn");
+
+// START CAMERA (gunakan fungsi existing kamu)
+async function startCamera() {
+    try {
+        stream2 = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: "user", width: { ideal: 640 }, height: { ideal: 500 } }
+        });
+
+        camera2.srcObject = stream2;
+    } catch (err) {
+        console.error("Kamera error:", err);
+        alert("Tidak bisa mengakses kamera.");
+    }
+}
+
+function stopCamera() {
+    if (stream2) {
+        stream2.getTracks().forEach(track => track.stop());
+        camera2.srcObject = null;
+        stream2 = null;
+    }
+}
+
+/* 
+   AMBIL 3 FOTO OTOMATIS
+*/
+async function takeThreePhotos() {
+    if (!stream2) {
+        alert("Kamera belum aktif!");
+        return;
+    }
+
+    capture3Btn.disabled = true;
+
+    let photos = [];
+    let canvasPhoto = document.createElement("canvas");
+    let ctx = canvasPhoto.getContext("2d");
+
+    for (let i = 3; i > 0; i--) {
+        countdown.textContent = i;
+        await new Promise(r => setTimeout(r, 1000));
+    }
+
+    countdown.textContent = "📸";
+
+    // Ambil 3 FOTO
+    for (let i = 0; i < 4; i++) {
+        await new Promise(r => setTimeout(r, 3000));
+
+        canvasPhoto.width = camera2.videoWidth;
+        canvasPhoto.height = camera2.videoHeight;
+        ctx.drawImage(camera2, 0, 0, canvasPhoto.width, canvasPhoto.height);
+
+        let dataUrl = canvasPhoto.toDataURL("image/png");
+        photos.push(dataUrl);
+
+        countdown.textContent = `Take Foto ${i + 1} (3s) ✓`;
+    }
+
+    countdown.textContent = "";
+
+    // Buat strip foto
+    createPhotoStrip(photos);
+}
+
+/*
+   BUAT PHOTO STRIP (3 foto vertical)
+*/
+function createPhotoStrip(photos) {
+    const stripCanvas = document.createElement("canvas");
+    const ctx = stripCanvas.getContext("2d");
+
+    const width = 640;
+    const height = 500 * 3; // 3 foto vertikal
+
+    stripCanvas.width = width;
+    stripCanvas.height = height;
+
+    photos.forEach((imgSrc, index) => {
+        let img = new Image();
+        img.src = imgSrc;
+
+        img.onload = () => {
+            ctx.drawImage(img, 0, index * 500, width, 480);
+
+            // Jika foto terakhir selesai → tampilkan hasil
+            if (index === 2) {
+                const finalStrip = stripCanvas.toDataURL("image/png");
+                photoStrip.src = finalStrip;
+                photoStrip.style.display = "block";
+                downloadStripBtn.style.display = "block";
+            }
+        };
+    });
+}
+
+/*
+   DOWNLOAD PHOTO STRIP
+*/
+downloadStripBtn.addEventListener("click", () => {
+    const link = document.createElement("a");
+    link.href = photoStrip.src;
+    link.download = "photo-strip.png";
+    link.click();
+});
+
+/*
+   BUTTON LISTENER
+*/
+capture3Btn.addEventListener("click", () => {
+    playClickSound?.(); // jika ada suara klik
+    takeThreePhotos();
+});
+
+// --- 4. GALLERY LOGIC ---
+const galeriInput = document.getElementById('galeriInput');
+const galeriList = document.getElementById('galeriList');
+
+galeriInput.addEventListener('change', (event) => {
+  galeriList.innerHTML = ''; 
+
+  Array.from(event.target.files).forEach(file => {
+    if (file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const div = document.createElement('div');
+        const img = document.createElement('img');
+        img.src = e.target.result;
+        img.alt = file.name;
+        div.appendChild(img);
+        galeriList.appendChild(div);
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+});
+//password
+  function checkPass() {
+    const correct = "131204"; // ← ubah password sesuai keinginanmu
+    const input = document.getElementById("pass").value;
+
+    if (input === correct) {
+      document.getElementById("masuk").style.display = "block";
+      document.getElementById("berhasil").style.display = "block";
+    } else {
+      document.getElementById("error").style.display = "block";
+    }
+    setTimeout(() => {
+    document.getElementById("error").style.display = "none";
+  }, 3000); // 3000 ms = 3 detik
+    setTimeout(() => {
+    document.getElementById("masuk").style.display = "none";
+  }, 5000); // 3000 ms = 3 detik
+   setTimeout(() => {
+    document.getElementById("berhasil").style.display = "none";
+  }, 5000); // 3000 ms = 3 detik
+  };
+  // music
+  function playMusic() {
+  const audio = document.getElementById("bgm");
+  audio.volume = 0.99; // 0.0 - 1.0
+  audio.play();
+}
+function pauseMusic(){ 
+    const audio = document.getElementById("bgm");
+    audio.pause();      // stop
+
+}
+  // music
+  function playMusic1() {
+  const audio = document.getElementById("bgm1");
+  audio.volume = 0.99; // 0.0 - 1.0
+  audio.play();
+}
+function pauseMusic1(){ 
+    const audio = document.getElementById("bgm1");
+    audio.pause();      // stop
+}
+  // music
+  function playMusic2() {
+  const audio = document.getElementById("bgm2");
+  audio.volume = 0.99; // 0.0 - 1.0
+  audio.play();
+}
+function pauseMusic2(){ 
+    const audio = document.getElementById("bgm2");
+    audio.pause();      // stop
+}
+  // music
+  function playMusic3() {
+  const audio = document.getElementById("bgm3");
+  audio.volume = 0.99; // 0.0 - 1.0
+  audio.play();
+}
+function pauseMusic3(){ 
+    const audio = document.getElementById("bgm3");
+    audio.pause();      // stop
+
+}
+// --- 5. PHYSICAL BUTTON CONTROL (A/B) ---
+function handleControl(button) {
+    const currentSection = document.querySelector('.section[style*="display: block"]');
+
+    if (!currentSection) {
+        return;
+    }
+
+    if (button === 'B') {
+        if (currentSection.id === 'photobooth') {
+            stopCamera();
+        }
+        backMenu();
+        return;
+    }
+
+    if (button === 'A') {
+        if (currentSection.id === 'photobooth') {
+            captureBtn.click(); 
+        } 
+    }
+}
+
+document.getElementById('btnA').addEventListener('click', () => handleControl('A'));
+document.getElementById('btnB').addEventListener('click', () => handleControl('B'));
+
+
+// Tambahkan efek tekan visual pada tombol fisik
+document.querySelectorAll('.btnA, .btnB').forEach(btn => {
+    btn.addEventListener('mousedown', () => btn.classList.add('active'));
+    btn.addEventListener('mouseup', () => btn.classList.remove('active'));
+    btn.addEventListener('mouseleave', () => btn.classList.remove('active')); 
+});
+  
+</script>
+
+</body>
+</html>
+
